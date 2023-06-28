@@ -17,7 +17,6 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
-    
 
     <title>초미니홈피 - 팬명록</title>
 
@@ -33,56 +32,104 @@
       rel="stylesheet"
     />
     <style>
-          
-          * {
-            font-family: "Noto Serif KR", serif;
-        }
+      * {
+        font-family: "Noto Serif KR", serif;
+      }
 
-        .mypic {
-            width: 100%;
-            height: 300px;
+      .mypic {
+        width: 100%;
+        height: 300px;
 
-            background-image: linear-gradient(0deg,
-                    rgba(0, 0, 0, 0.5),
-                    rgba(0, 0, 0, 0.5)),
-                url("https://file.mk.co.kr/meet/neds/2023/05/image_readmed_2023_401911_16850140215484695.jpg");
-            background-position: center 30%;
-            background-size: cover;
+        background-image: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.5),
+            rgba(0, 0, 0, 0.5)
+          ),
+          url("https://file.mk.co.kr/meet/neds/2023/05/image_readmed_2023_401911_16850140215484695.jpg");
+        background-position: center 30%;
+        background-size: cover;
 
-            color: white;
+        color: white;
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .mypost {
-            width: 95%;
-            max-width: 500px;
-            margin: 20px auto 20px auto;
+      .mypost {
+        width: 95%;
+        max-width: 500px;
+        margin: 20px auto 20px auto;
 
-            box-shadow: 0px 0px 3px 0px black;
-            padding: 20px;
-        }
+        box-shadow: 0px 0px 3px 0px black;
+        padding: 20px;
+      }
 
-        .mypost>button {
-            margin-top: 15px;
-        }
+      .mypost > button {
+        margin-top: 15px;
+      }
 
-        .mycards {
-            width: 95%;
-            max-width: 500px;
-            margin: auto;
-        }
+      .mycards {
+        width: 95%;
+        max-width: 500px;
+        margin: auto;
+      }
 
-        .mycards>.card {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-    
+      .mycards > .card {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
     </style>
-    
+    <script>
+      $(document).ready(function () {
+        set_temp();
+        show_comment();
+      });
+      function set_temp() {
+        fetch("http://spartacodingclub.shop/sparta_api/weather/seoul")
+          .then((res) => res.json())
+          .then((data) => {
+            let temp = data["temp"];
+            $("#temp").text(temp);
+          });
+      }
+      function save_comment() {
+        let name = $("#name").val();
+        let comment = $("#comment").val();
+        let formData = new FormData();
+        formData.append("name_give", name);
+        formData.append("comment_give", comment);
+
+        fetch("/guestbook", { method: "POST", body: formData })
+          .then((res) => res.json())
+          .then((data) => {
+            alert(data["msg"]);
+            window.location.reload();
+          });
+      }
+      function show_comment() {
+        fetch("/guestbook")
+          .then((res) => res.json())
+          .then((data) => {
+            let rows = data["result"];
+            $("#comment-list").empty();
+            rows.forEach((a) => {
+              let name = a["name"];
+              let comment = a["comment"];
+              let temp_html = `<div class="card">
+                                <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>${comment}</p>
+                                    <footer class="blockquote-footer">${name}</footer>
+                                </blockquote>
+                                </div>
+                            </div>`;
+              $("#comment-list").append(temp_html);
+            });
+          });
+      }
+    </script>
   </head>
 
   <body>
